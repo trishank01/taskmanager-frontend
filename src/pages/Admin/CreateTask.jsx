@@ -16,6 +16,7 @@ import DeleteAlert from "../../components/DeleteAlert";
 import Model from "../../components/Model";
 
 
+
 const CreateTask = () => {
   const location = useLocation();
   const { taskId } = location.state || {};
@@ -69,8 +70,13 @@ const CreateTask = () => {
         dueDate: new Date(taskData.dueDate).toISOString(),
         todoChecklist: todolist,
       });
+ 
+      if(response?.data?.message === "Task created successfully"){
+         toast.success("Task Created Successfully");
+             navigate("/admin/tasks")
+      }
 
-      toast.success("Task Created Successfully");
+   
 
       clearData();
     } catch (error) {
