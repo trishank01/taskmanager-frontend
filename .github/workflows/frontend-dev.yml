@@ -5,6 +5,12 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: write
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -21,12 +27,12 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t trishank01/taskmanager-frontend:dev .
-      
+          docker build -t trishank01/taskmanager-frontend:${IMAGE_TAG} .
+
       - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: trishank01/taskmanager-frontend:dev
+          image-ref: trishank01/taskmanager-frontend:${IMAGE_TAG}
           format: table
           exit-code: 1
           ignore-unfixed: true
@@ -34,4 +40,4 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          docker push trishank01/taskmanager-frontend:dev
+          docker push trishank01/taskmanager-frontend:${IMAGE_TAG}
