@@ -98,6 +98,40 @@ npm run dev
 yarn dev
 
 
+## ☁️ DevOps & Deployment
+
+This frontend repo is part of a full GitOps deployment pipeline.
+
+- Built by GitHub Actions in `.github/workflows/frontend-dev.yml` when code is pushed to `develop`.
+- Docker image is built and pushed to Docker Hub as `trishank01/taskmanager-frontend:${{ github.sha }}`.
+- Build args passed into the frontend image:
+  - `VITE_API_URL`
+  - `VITE_CLOUDINARY_CLOUD_NAME`
+  - `VITE_CLOUDINARY_UPLOAD_PRESET`
+- The workflow clones the separate manifest repo `task-manager-k8s` and updates `dev/frontend/deployment.yaml` with the new image tag.
+- Argo CD watches that repo and syncs the `dev` and `prod` apps into the Kubernetes cluster.
+
+### Docker & Kubernetes details
+
+- `frontend/Dockerfile` uses a multi-stage build:
+  - build stage with Node and Vite
+  - runtime stage with `nginx:alpine`
+- Final app is served by Nginx on port `80`.
+- Kubernetes frontend manifest uses `containerPort: 80` and `imagePullPolicy: Always`.
+- The deployed manifest path is `dev/frontend/deployment.yaml` in the manifest repo.
+
+### Build-time secrets
+
+- Sensitive values are injected at build time from GitHub Secrets, not hard-coded in the app.
+- The frontend receives runtime configuration through Vite environment values.
+
+### Why this matters
+
+- The pipeline makes each deploy traceable by SHA-based image tags.
+- Automatic manifest updates ensure Argo CD can deploy the exact image.
+- This repo focuses on frontend build and packaging; the manifest repo owns deployment configuration.
+
+
 ### 📲 Responsive Design
 Designed with mobile-first principles:
 
