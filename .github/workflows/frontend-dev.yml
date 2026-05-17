@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t trishank01/taskmanager-frontend:${IMAGE_TAG} .
+          docker build --no-cache -t trishank01/taskmanager-frontend:${IMAGE_TAG} .
 
       - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@master
